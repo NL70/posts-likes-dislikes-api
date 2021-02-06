@@ -2,6 +2,7 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -17,58 +18,43 @@ body {
   margin: 0 0 50px;
 }
 
-.countries {
+.card-list {
   padding: 0;
   list-style-type: none;
   width: 480px;
 }
 
-.country-item {
+.card {
   background-color: #fff;
   border-radius: 3px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  align-items: start;
   padding: 15px 10px;
   margin: 10px 0;
 }
 
-.country-item:hover {
+.card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-.country-flag {
-  width: 40px;
+.card-right-contents {
+  margin: 0 15px;
 }
 
-.country-name {
-  flex: 2;
+.book-thumbnail {
+  width: 120px;
+  object-fit: contain;
+}
+
+.book-title {
+  margin-bottom: 10px;
   font-weight: normal;
   letter-spacing: 0.5px;
-  margin: 0 5px;
-  text-align: center;
 }
 
-.country-info {
-  border-left: 1px solid #aaa;
-  color: #777;
-  padding: 0 15px;
-  flex: 1;
-}
-
-.country-population {
+.book-description {
   font-weight: 300;
-  line-height: 24px;
-  margin: 0;
-  margin-bottom: 12px;
-}
-
-.country-population-text {
-  font-weight: 300;
-  letter-spacing: 1px;
-  margin: 0;
-  text-transform: uppercase;
 }
 
 input {

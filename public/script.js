@@ -2,69 +2,66 @@ const search_input = document.getElementById("search");
 const results = document.getElementById("results");
 
 let search_term = "";
-let countries;
+let books = [];
+let booksCount;
 
-const fetchCountries = async () => {
-  countries = await fetch(
-    "https://restcountries.eu/rest/v2/all?fields=name;population;flag"
-  ).then((res) => res.json());
+const fetchBooks = async () => {
+  if (!search_term) {
+    return;
+  }
+
+  const response = await fetch(
+    `https://rocky-mountain-35341.herokuapp.com/google_books?q=${search_term}`
+  );
+  const responseJson = await response.json();
+  books = responseJson.items;
+  booksCount = responseJson.totalItems;
 };
 
-const showCountries = async () => {
+const showBooks = async () => {
   // clearHTML
   results.innerHTML = "";
 
+  await fetchBooks();
+
   // creating the structure
   const ul = document.createElement("ul");
-  ul.classList.add("countries");
+  ul.classList.add("card-list");
 
-  countries
-    .filter((country) =>
-      country.name.toLowerCase().includes(search_term.toLowerCase())
-    )
-    .forEach((country) => {
-      const li = document.createElement("li");
-      const country_flag = document.createElement("img");
-      const country_name = document.createElement("h3");
-      const country_info = document.createElement("div");
-      const country_population = document.createElement("h2");
-      const country_popupation_text = document.createElement("h5");
+  books.forEach((book) => {
+    const li = document.createElement("li");
+    const thumbnail = document.createElement("img");
+    const cardRightContents = document.createElement("div");
+    const title = document.createElement("h3");
+    const description = document.createElement("p");
 
-      li.classList.add("country-item");
-      country_info.classList.add("country-info");
+    li.classList.add("card");
 
-      country_flag.src = country.flag;
-      country_flag.classList.add("country-flag");
+    cardRightContents.classList.add("card-right-contents");
 
-      country_name.innerText = country.name;
-      country_name.classList.add("country-name");
+    thumbnail.src = book.volumeInfo.imageLinks.smallThumbnail;
+    thumbnail.classList.add("book-thumbnail");
 
-      country_population.innerText = numberWithCommas(country.population);
-      country_population.classList.add("country-population");
-      country_popupation_text.innerText = "Population";
-      country_popupation_text.classList.add("country-population-text");
+    title.innerText = book.volumeInfo.title;
+    title.classList.add("book-title");
 
-      country_info.appendChild(country_population);
-      country_info.appendChild(country_popupation_text);
+    description.innerText = book.volumeInfo.description;
+    description.classList.add("book-description");
 
-      li.appendChild(country_flag);
-      li.appendChild(country_name);
-      li.appendChild(country_info);
-      ul.appendChild(li);
-    });
+    li.appendChild(thumbnail);
+    cardRightContents.appendChild(title);
+    cardRightContents.appendChild(description);
+    li.appendChild(cardRightContents);
+    ul.appendChild(li);
+  });
   results.appendChild(ul);
 };
 
-// display initial countries
-fetchCountries().then(() => showCountries());
+// display initial books
+showBooks();
 
 search_input.addEventListener("input", (e) => {
   search_term = e.target.value;
-  // re-display countries again based on the new search_term
-  showCountries();
+  // re-display books again based on the new search_term
+  showBooks();
 });
-
-// From StackOverflow https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
