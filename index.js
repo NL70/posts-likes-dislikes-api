@@ -1,9 +1,10 @@
+const fetch = require("node-fetch");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const livereload = require("livereload");
-const connectLivereload = require("connect-livereload");
 const { pool } = require("./config");
+
+require("dotenv").config();
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 if (process.env.NODE_ENV !== "production") {
+  const livereload = require("livereload");
+  const connectLivereload = require("connect-livereload");
   // Reload browser when saving frontend code
   const liveReloadServer = livereload.createServer();
   liveReloadServer.watch(__dirname + "/public");
@@ -50,6 +53,15 @@ const addBook = (request, response) => {
   );
 };
 
+const searchBooks = async (request, response) => {
+  const searchTerm = request.query.q;
+  const booksResponse = await fetch(
+    `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=${process.env.GOOGLE_BOOKS_API_KEY}`
+  );
+  const booksResponseJson = await booksResponse.json();
+  response.status(200).json(booksResponseJson);
+};
+
 // Static files
 app.use(express.static("public"));
 
@@ -59,6 +71,8 @@ app
   .get(getBooks)
   // POST endpoint
   .post(addBook);
+
+app.route("/google_books").get(searchBooks);
 
 // Start server
 app.listen(process.env.PORT || 3002, () => {
