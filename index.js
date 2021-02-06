@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const livereload = require("livereload");
+const connectLivereload = require("connect-livereload");
 const { pool } = require("./config");
 
 const app = express();
@@ -8,6 +10,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+if (process.env.NODE_ENV !== "production") {
+  // Reload browser when saving frontend code
+  const liveReloadServer = livereload.createServer();
+  liveReloadServer.watch(__dirname + "/public");
+
+  // Reload the page when the server has started
+  liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+      liveReloadServer.refresh("/");
+    }, 100);
+  });
+
+  app.use(connectLivereload());
+}
 
 const getBooks = (request, response) => {
   pool.query("SELECT * FROM books", (error, results) => {
