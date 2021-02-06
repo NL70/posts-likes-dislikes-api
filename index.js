@@ -33,6 +33,9 @@ const addBook = (request, response) => {
   );
 };
 
+// Static files
+app.use(express.static("public"));
+
 app
   .route("/books")
   // GET endpoint
