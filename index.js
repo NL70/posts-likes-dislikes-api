@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 const { pool } = require("./config");
 
 require("dotenv").config();
@@ -34,7 +35,7 @@ const getBooks = (request, response) => {
     if (error) {
       throw error;
     }
-    response.status(200).json(results.rows);
+    response.status(200).json({ data: results.rows });
   });
 };
 
@@ -71,6 +72,12 @@ app
   .get(getBooks)
   // POST endpoint
   .post(addBook);
+
+const publicPath = path.join(__dirname, "public");
+
+app.use("/mybooks", (req, res) => {
+  res.sendFile(publicPath + "/mybooks.html");
+});
 
 app.route("/google_books").get(searchBooks);
 

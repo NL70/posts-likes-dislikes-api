@@ -10,12 +10,29 @@ body {
 
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-direction: column;
 
   min-height: 100vh;
   font-family: "Roboto", sans-serif;
   margin: 0 0 50px;
+}
+
+nav {
+  position: fixed;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #262626;
+}
+
+nav a {
+  padding: 15px;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+main {
+  margin-top: 80px;
 }
 
 .card-list {
