@@ -45,8 +45,6 @@ main {
   background-color: #fff;
   border-radius: 3px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: start;
   padding: 15px 10px;
   margin: 10px 0;
 }
@@ -55,8 +53,34 @@ main {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+.card-body {
+  display: flex;
+  align-items: start;
+}
+
 .card-right-contents {
   margin: 0 15px;
+}
+
+.card-add-button {
+  display: inline-block;
+  width: 100%;
+  padding: 8px 16px;
+  border: 0.1em solid #ffffff;
+  margin-top: 15px;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  background-color: #4eb5f1;
+  color: #ffffff;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.card-add-button:hover {
+  background-color: #4095c6;
 }
 
 .book-thumbnail {

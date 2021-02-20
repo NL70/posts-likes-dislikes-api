@@ -18,6 +18,16 @@ const fetchBooks = async () => {
   booksCount = responseJson.totalItems;
 };
 
+const addBook = async (book) => {
+  await fetch(`http://localhost:3002/books`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(book),
+  });
+};
+
 const showBooks = async () => {
   // clearHTML
   results.innerHTML = "";
@@ -31,13 +41,26 @@ const showBooks = async () => {
   books.forEach((book) => {
     const li = document.createElement("li");
     const thumbnail = document.createElement("img");
+    const cardBody = document.createElement("div");
     const cardRightContents = document.createElement("div");
     const title = document.createElement("h3");
     const description = document.createElement("p");
+    const cardAddButton = document.createElement("button");
 
     li.classList.add("card");
-
+    cardBody.classList.add("card-body");
     cardRightContents.classList.add("card-right-contents");
+
+    cardAddButton.classList.add("card-add-button");
+    cardAddButton.innerText = "Add Book";
+    cardAddButton.onclick = async () => {
+      const authors = book.volumeInfo.authors
+        ? book.volumeInfo.authors.join(", ")
+        : "Unknown author";
+      const title = book.volumeInfo.title;
+      const bookData = { author: authors, title: title };
+      await addBook(bookData);
+    };
 
     if (
       book.volumeInfo.imageLinks &&
@@ -57,10 +80,12 @@ const showBooks = async () => {
     description.innerText = book.volumeInfo.description || "No description";
     description.classList.add("book-description");
 
-    li.appendChild(thumbnail);
+    li.appendChild(cardBody);
+    li.appendChild(cardAddButton);
+    cardBody.appendChild(thumbnail);
     cardRightContents.appendChild(title);
     cardRightContents.appendChild(description);
-    li.appendChild(cardRightContents);
+    cardBody.appendChild(cardRightContents);
     ul.appendChild(li);
   });
   results.appendChild(ul);
