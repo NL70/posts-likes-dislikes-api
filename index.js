@@ -76,5 +76,5 @@ app.route("/google_books").get(searchBooks);
 
 // Start server
 app.listen(process.env.PORT || 3002, () => {
-  console.log(`Server listening`);
+  console.log(`Server listening at port ${process.env.PORT || 3002}`);
 });

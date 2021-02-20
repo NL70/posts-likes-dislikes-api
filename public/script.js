@@ -39,7 +39,16 @@ const showBooks = async () => {
 
     cardRightContents.classList.add("card-right-contents");
 
-    thumbnail.src = book.volumeInfo.imageLinks.smallThumbnail;
+    if (
+      book.volumeInfo.imageLinks &&
+      book.volumeInfo.imageLinks.smallThumbnail
+    ) {
+      thumbnail.src = book.volumeInfo.imageLinks.smallThumbnail;
+    } else {
+      thumbnail.src =
+        "https://www.jennybeaumont.com/wp-content/uploads/2015/03/placeholder.gif";
+    }
+
     thumbnail.classList.add("book-thumbnail");
 
     title.innerText = book.volumeInfo.title;
