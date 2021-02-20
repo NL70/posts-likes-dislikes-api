@@ -54,7 +54,7 @@ const showBooks = async () => {
     title.innerText = book.volumeInfo.title;
     title.classList.add("book-title");
 
-    description.innerText = book.volumeInfo.description;
+    description.innerText = book.volumeInfo.description || "No description";
     description.classList.add("book-description");
 
     li.appendChild(thumbnail);
