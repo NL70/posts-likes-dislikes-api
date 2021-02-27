@@ -8,6 +8,12 @@ const fetchMyBooks = async () => {
   myBooks = responseJson.data;
 };
 
+const deleteBook = async (bookId) => {
+  await fetch(`http://localhost:3002/books/${bookId}`, {
+    method: "DELETE",
+  });
+};
+
 const showMyBooks = async () => {
   // clearHTML
   results.innerHTML = "";
@@ -23,11 +29,17 @@ const showMyBooks = async () => {
     const card = document.createElement("div");
     const title = document.createElement("h3");
     const author = document.createElement("p");
-    const cardButton = document.createElement("button");
+    const cardDeleteButton = document.createElement("button");
 
     li.classList.add("card");
-    cardButton.classList.add("card-button", "card-delete-button");
-    cardButton.innerText = "Delete Book";
+    li.setAttribute("id", book.id);
+
+    cardDeleteButton.classList.add("card-button", "card-delete-button");
+    cardDeleteButton.innerText = "Delete Book";
+    cardDeleteButton.onclick = async () => {
+      await deleteBook(book.id);
+      li.remove();
+    };
 
     card.classList.add("card-right-contents");
 
@@ -38,7 +50,7 @@ const showMyBooks = async () => {
 
     card.appendChild(title);
     card.appendChild(author);
-    card.appendChild(cardButton);
+    card.appendChild(cardDeleteButton);
     li.appendChild(card);
     ul.appendChild(li);
   });
