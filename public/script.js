@@ -3,7 +3,6 @@ const results = document.getElementById("results");
 
 let search_term = "";
 let books = [];
-let booksCount;
 
 const fetchBooks = async () => {
   if (!search_term) {
@@ -14,8 +13,7 @@ const fetchBooks = async () => {
     `https://rocky-mountain-35341.herokuapp.com/google_books?q=${search_term}`
   );
   const responseJson = await response.json();
-  books = responseJson.items;
-  booksCount = responseJson.totalItems;
+  books = responseJson.items || [];
 };
 
 const addBook = async (book) => {
