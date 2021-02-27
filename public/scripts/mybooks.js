@@ -20,22 +20,26 @@ const showMyBooks = async () => {
 
   myBooks.forEach((book) => {
     const li = document.createElement("li");
-    const cardRightContents = document.createElement("div");
+    const card = document.createElement("div");
     const title = document.createElement("h3");
     const author = document.createElement("p");
+    const cardButton = document.createElement("button");
 
     li.classList.add("card");
+    cardButton.classList.add("card-button", "card-delete-button");
+    cardButton.innerText = "Delete Book";
 
-    cardRightContents.classList.add("card-right-contents");
+    card.classList.add("card-right-contents");
 
     title.innerText = book.title;
     title.classList.add("book-title");
 
     author.innerText = book.author;
 
-    cardRightContents.appendChild(title);
-    cardRightContents.appendChild(author);
-    li.appendChild(cardRightContents);
+    card.appendChild(title);
+    card.appendChild(author);
+    card.appendChild(cardButton);
+    li.appendChild(card);
     ul.appendChild(li);
   });
   results.appendChild(ul);

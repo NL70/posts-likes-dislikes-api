@@ -62,7 +62,7 @@ main {
   margin: 0 15px;
 }
 
-.card-add-button {
+.card-button {
   display: inline-block;
   width: 100%;
   padding: 8px 16px;
@@ -73,14 +73,25 @@ main {
   text-decoration: none;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background-color: #4eb5f1;
   color: #ffffff;
   text-align: center;
   transition: all 0.2s;
 }
 
+.card-add-button {
+  background-color: #4eb5f1;
+}
+
+.card-delete-button {
+  background-color: #dc004e;
+}
+
 .card-add-button:hover {
   background-color: #4095c6;
+}
+
+.card-delete-button:hover {
+  background-color: #9a0036;
 }
 
 .book-thumbnail {

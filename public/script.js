@@ -49,7 +49,7 @@ const showBooks = async () => {
     cardBody.classList.add("card-body");
     cardRightContents.classList.add("card-right-contents");
 
-    cardAddButton.classList.add("card-add-button");
+    cardAddButton.classList.add("card-button", "card-add-button");
     cardAddButton.innerText = "Add Book";
     cardAddButton.onclick = async () => {
       const authors = book.volumeInfo.authors
