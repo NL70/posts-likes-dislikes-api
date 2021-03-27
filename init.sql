@@ -6,3 +6,9 @@ CREATE TABLE books (
 
 INSERT INTO books (author, title)
 VALUES  ('J.K. Rowling', 'Harry Potter');
+
+CREATE TABLE users (
+  ID SERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL
+);
