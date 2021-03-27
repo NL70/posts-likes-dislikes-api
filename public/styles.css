@@ -62,7 +62,8 @@ main {
   margin: 0 15px;
 }
 
-.card-button {
+.card-button,
+.login-button {
   display: inline-block;
   width: 100%;
   padding: 8px 16px;
@@ -78,7 +79,8 @@ main {
   transition: all 0.2s;
 }
 
-.card-add-button {
+.card-add-button,
+.login-button {
   background-color: #4eb5f1;
 }
 
@@ -115,4 +117,22 @@ input {
   border: 1px solid #ddd;
   padding: 15px;
   width: 480px;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.login-label {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.login-button {
+  margin-top: 20px;
+  border-color: transparent;
+  font-size: 18px;
+  font-weight: bold;
 }

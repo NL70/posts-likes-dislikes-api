@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Books</title>
+    <link rel="icon" type="image/ico" href="images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+  <body>
+    <nav><a href="/">Search Books</a><a href="/mybooks">My Books</a></nav>
+    <main>
+      <form action="/login" method="post">
+        <div class="login-container">
+          <h2>Login</h2>
+          <label for="email" class="login-label"><b>Username</b></label>
+          <input
+            type="email"
+            placeholder="Enter Username"
+            name="email"
+            required
+          />
+          <label for="password" class="login-label"><b>Password</b></label>
+          <input
+            type="password"
+            placeholder="Enter Password"
+            name="password"
+            required
+          />
+          <button type="submit" class="login-button">Login</button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
