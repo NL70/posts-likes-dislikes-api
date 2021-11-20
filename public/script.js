@@ -10,7 +10,7 @@ const fetchBooks = async () => {
   }
 
   const response = await fetch(
-    `https://rocky-mountain-35341.herokuapp.com/google_books?q=${search_term}`
+    `http://localhost:3002/google_books?q=${search_term}`
   );
   const responseJson = await response.json();
   books = responseJson.items || [];

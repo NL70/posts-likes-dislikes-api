@@ -38,7 +38,6 @@ const authTokens = {};
 app.use((req, res, next) => {
   // Get auth token from the cookies
   const authToken = req.cookies["AuthToken"];
-  console.log(authToken);
   // Inject the user to the request
   req.user = authTokens[authToken];
   next();
@@ -93,10 +92,6 @@ app.post("/login", (req, res, next) => {
           // Setting the auth token in cookies
           res.cookie("AuthToken", authToken);
           res.redirect("mybooks");
-          // Temporary, comment out after adding redirection
-          // res
-          //   .status(200)
-          //   .json({ status: "success", message: "Login success." });
           return;
         } else {
           res.status(400).json({
@@ -115,10 +110,13 @@ app.post("/login", (req, res, next) => {
           if (error) {
             throw error;
           }
-          res
-            .status(200)
-            .json({ status: "success", message: "Signup success." });
-          next();
+          const user = results.rows[0];
+          const authToken = generateAuthToken();
+          // Store authentication token
+          authTokens[authToken] = user;
+          // Setting the auth token in cookies
+          res.cookie("AuthToken", authToken);
+          res.redirect("mybooks");
           return;
         }
       );
