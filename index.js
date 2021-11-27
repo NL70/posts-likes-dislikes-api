@@ -55,8 +55,17 @@ const searchBooks = async (request, response) => {
 // Static files
 app.use(express.static("public"));
 
-const booksRouter = require("./api/books");
-app.use("/books", booksRouter);
+const postsRouter = require("./api/posts");
+app.use("/posts", postsRouter);
+
+const usersRouter = require("./api/users");
+app.use("/users", usersRouter);
+
+const likesRouter = require("./api/likes");
+app.use("/likes", likesRouter);
+
+const dislikesRouter = require("./api/dislikes");
+app.use("/dislikes", dislikesRouter);
 
 const publicPath = path.join(__dirname, "public");
 
