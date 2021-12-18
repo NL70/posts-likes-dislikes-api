@@ -4,7 +4,8 @@ const { pool } = require("../config");
 const postsRouter = express.Router();
 
 const getPosts = (req, res) => {
-  const userId = req.session || req.session.user || req.session.user.id;
+  const userId =
+    (req.session && req.session.user && req.session.user.id) || null;
   pool.query(
     `SELECT posts.id, title, content, username,
     (SELECT COUNT(*) as like_count FROM likes WHERE post_id=posts.id),
@@ -16,7 +17,7 @@ const getPosts = (req, res) => {
     ON posts.user_id = users.id
     WHERE posts.id = posts.id;
     `,
-    [userId || null],
+    [userId],
     (error, results) => {
       if (error) {
         res.status(500).json({ status: "error", message: error.message });
