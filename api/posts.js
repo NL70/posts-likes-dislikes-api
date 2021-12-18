@@ -16,7 +16,7 @@ const getPosts = (req, res) => {
     ON posts.user_id = users.id
     WHERE posts.id = posts.id;
     `,
-    [userId],
+    [userId || null],
     (error, results) => {
       if (error) {
         res.status(500).json({ status: "error", message: error.message });
