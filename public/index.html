@@ -2,20 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Search Books</title>
-    <link rel="icon" type="image/ico" href="images/favicon.ico" />
+    <title>Post Likes Dislikes</title>
+
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
-    <nav>
-      <a href="/"><img src="images/water.svg" width="20px" height="20px" > Search Books</a>
-      <a href="/mybooks">My Books</a>
-    </nav>
+    <header>
+      <h2 id="username-display"></h2>
+    </header>
     <main>
-      <h2>Search Books</h2>
-      <input type="text" id="search" placeholder="Search for a book" />
-      <div id="results"></div>
-    </main>
+      <div id="cards-wrapper"></div>
+      <a class="create-post" href="post.html">+</a>
     <script src="script.js"></script>
   </body>
 </html>

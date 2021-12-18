@@ -4,15 +4,19 @@ const { pool } = require("../config");
 const postsRouter = express.Router();
 
 const getPosts = (req, res) => {
+  const userId = req.session?.user?.id;
   pool.query(
     `SELECT posts.id, title, content, username,
     (SELECT COUNT(*) as like_count FROM likes WHERE post_id=posts.id),
-    (SELECT COUNT(*) as dislike_count FROM dislikes WHERE post_id=posts.id)
+    (SELECT COUNT(*) as dislike_count FROM dislikes WHERE post_id=posts.id),
+    (SELECT (CASE WHEN likes.user_id IS NULL THEN FALSE ELSE TRUE END) as is_liked FROM likes WHERE post_id=posts.id AND user_id=$1),
+    (SELECT (CASE WHEN dislikes.user_id IS NULL THEN FALSE ELSE TRUE END) as is_disliked FROM dislikes WHERE post_id=posts.id AND user_id=$1)
     FROM posts 
     JOIN users
     ON posts.user_id = users.id
     WHERE posts.id = posts.id;
     `,
+    [userId],
     (error, results) => {
       if (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -24,7 +28,8 @@ const getPosts = (req, res) => {
 };
 
 const addPosts = (req, res) => {
-  const { title, content, userId } = req.body;
+  const { title, content } = req.body;
+  const userId = req.session.user.id;
   if (!title || !content) {
     res
       .status(400)
@@ -57,25 +62,43 @@ const addPosts = (req, res) => {
   );
 };
 
-const deletePosts = (req, res) => {
+const deletePosts = async (req, res) => {
   const postsId = req.params.postId;
-  pool.query("DELETE FROM posts WHERE id = $1", [postsId], (error, results) => {
-    if (results.rowCount === 0) {
-      res
-        .status(404)
-        .json({ status: "error", message: "Post does not exist." });
-      return;
-    }
-    if (error) {
-      res.status(500).json({ status: "error", message: error.message });
-      return;
-    }
-    res.status(204);
-  });
+  // user validation
+  // userID = req.user.id
+
+  try {
+    await pool.query("BEGIN");
+    const deleteLikesResults = await pool.query(
+      "DELETE FROM likes WHERE post_id = $1;",
+      [postsId]
+    );
+
+    const deleteDislikesResults = await pool.query(
+      "DELETE FROM dislikes WHERE post_id = $1;",
+      [postsId]
+    );
+
+    const deletePostsResults = await pool.query(
+      "DELETE FROM posts WHERE id = $1;",
+      [postsId]
+    );
+    await pool.query("COMMIT");
+    res.status(204).json();
+  } catch (error) {
+    await pool.query("ROLLBACK");
+    throw error;
+  }
 };
 
 postsRouter.get("/", getPosts);
 postsRouter.post("/", addPosts);
 postsRouter.delete("/:postId", deletePosts);
+
+const likesRouter = require("./likes");
+postsRouter.use("/:postId/likes", likesRouter);
+
+const dislikesRouter = require("./dislikes");
+postsRouter.use("/:postId/dislikes", dislikesRouter);
 
 module.exports = postsRouter;

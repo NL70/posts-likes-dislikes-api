@@ -1,99 +1,274 @@
-const search_input = document.getElementById("search");
-const results = document.getElementById("results");
+// const search_input = document.getElementById("search");
+// const results = document.getElementById("results");
 
-let search_term = "";
-let books = [];
+// let search_term = "";
 
-const fetchBooks = async () => {
-  if (!search_term) {
-    return;
-  }
+console.log("SCRIPT RUNNING");
+let posts = [];
+const form = document.getElementById("login-form");
+const username = document.getElementById("username");
+const password = document.getElementById("password");
+let usernameValue = "";
+const usernameDisplay = document.getElementById("username-display");
+const apiUrl = "http://localhost:5000/";
+const title = document.getElementById("title");
+const content = document.getElementById("content");
+const createForm = document.getElementById("create-form");
 
-  const response = await fetch(
-    `http://localhost:3002/google_books?q=${search_term}`
-  );
-  const responseJson = await response.json();
-  books = responseJson.items || [];
-};
-
-const addBook = async (book) => {
-  await fetch(`http://localhost:3002/books`, {
+const login = async (user) => {
+  const response = await fetch(`${apiUrl}login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(book),
+    body: JSON.stringify(user),
+  });
+
+  if (response.status === 201) {
+    const responseJson = await response.json();
+    console.log(responseJson.data.username);
+    localStorage.setItem("username", responseJson.data.username);
+    window.location.href = "/";
+  }
+};
+
+if (usernameDisplay) {
+  usernameDisplay.innerText = localStorage.getItem("username");
+}
+
+const handleSubmit = async (event) => {
+  //   console.log("submit form");
+  //   console.log(username.value);
+  //   console.log(password.value);
+  event.preventDefault();
+  await login({
+    username: username.value,
+    password: password.value,
   });
 };
 
-const showBooks = async () => {
-  // clearHTML
-  results.innerHTML = "";
+const handleCreatePost = async (event) => {
+  //   console.log("submit form");
+  //   console.log(username.value);
+  //   console.log(password.value);
+  event.preventDefault();
+  await createPost({
+    title: title.value,
+    content: content.value,
+  });
+  window.location.href = "/";
+};
 
-  await fetchBooks();
+const createPost = async (post) => {
+  const response = await fetch(`${apiUrl}posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(post),
+  });
+};
 
-  // creating the structure
-  const ul = document.createElement("ul");
-  ul.classList.add("card-list");
+if (form) {
+  form.addEventListener("submit", handleSubmit);
+}
 
-  books.forEach((book) => {
-    const li = document.createElement("li");
-    const thumbnail = document.createElement("img");
-    const cardBody = document.createElement("div");
-    const cardRightContents = document.createElement("div");
-    const title = document.createElement("h3");
-    const description = document.createElement("p");
-    const cardAddButton = document.createElement("button");
+if (createForm) {
+  createForm.addEventListener("submit", handleCreatePost);
+}
 
-    li.classList.add("card");
-    cardBody.classList.add("card-body");
-    cardRightContents.classList.add("card-right-contents");
+const fetchPosts = async () => {
+  const response = await fetch(`${apiUrl}posts`);
+  const responseJson = await response.json();
+  console.log("e");
+  posts = responseJson.data;
+  // console.log(responseJson.data);
+};
 
-    cardAddButton.classList.add("card-button", "card-add-button");
-    cardAddButton.innerText = "Add Book";
-    cardAddButton.onclick = async () => {
-      const authors = book.volumeInfo.authors
-        ? book.volumeInfo.authors.join(", ")
-        : "Unknown author";
-      const title = book.volumeInfo.title;
-      const bookData = { author: authors, title: title };
-      await addBook(bookData);
-    };
+const showPosts = async () => {
+  await fetchPosts();
 
-    if (
-      book.volumeInfo.imageLinks &&
-      book.volumeInfo.imageLinks.smallThumbnail
-    ) {
-      thumbnail.src = book.volumeInfo.imageLinks.smallThumbnail;
-    } else {
-      thumbnail.src =
-        "https://www.jennybeaumont.com/wp-content/uploads/2015/03/placeholder.gif";
+  const cardsWrapper = document.getElementById("cards-wrapper");
+  if (!cardsWrapper) {
+    return;
+  }
+  posts.forEach((element, index) => {
+    console.log(element);
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    const heading = document.createElement("h2");
+    heading.classList.add("heading");
+
+    const content = document.createElement("p");
+    content.classList.add("content");
+
+    const likesDislikesContainer = document.createElement("div");
+    likesDislikesContainer.classList.add("likes-dislikes");
+
+    const likesContainer = document.createElement("div");
+    likesContainer.classList.add("likes-dislikes-individual");
+
+    let likesSymbol = document.createElement("span");
+    likesSymbol.innerText = "\u2191";
+
+    const likesCount = document.createElement("p");
+    likesCount.classList.add("content");
+    likesCount.classList.add("likes-count");
+
+    const dislikesContainer = document.createElement("div");
+    dislikesContainer.classList.add("likes-dislikes-individual");
+
+    let dislikesSymbol = document.createElement("span");
+    dislikesSymbol.innerText = "\u2193";
+
+    let deleteSymbol = document.createElement("img");
+    deleteSymbol.src = "images/delete-button.png";
+    deleteSymbol.classList.add("content");
+    deleteSymbol.classList.add("delete-button");
+
+    const dislikesCount = document.createElement("p");
+    dislikesCount.classList.add("content");
+
+    const leftContainer = document.createElement("div");
+    leftContainer.classList.add("left-container");
+
+    const rightContainer = document.createElement("div");
+
+    heading.innerText = element.title;
+    content.innerText = element.content;
+    likesCount.innerText = element.like_count;
+    dislikesCount.innerText = element.dislike_count;
+
+    dislikesContainer.addEventListener("click", async () => {
+      if (element.is_disliked) {
+        debounce(async () => {
+          await deleteDislikes(element, dislikesCount, element.id);
+          element.is_disliked = false;
+          element.dislike_count -= 1;
+        })();
+      } else {
+        debounce(async () => {
+          await addDislikes(element, dislikesCount, element.id);
+          element.is_disliked = true;
+          element.dislike_count += 1;
+        })();
+      }
+    });
+
+    likesContainer.addEventListener("click", async () => {
+      if (element.is_liked) {
+        debounce(async () => {
+          await deleteLikes(element, likesCount, element.id);
+          element.is_liked = false;
+          element.like_count -= 1;
+        })();
+      } else {
+        debounce(async () => {
+          await addLikes(element, likesCount, element.id);
+          element.is_liked = true;
+          element.like_count += 1;
+        })();
+      }
+    });
+
+    deleteSymbol.addEventListener("click", async () => {
+      await deletePosts(element, element.id);
+      card.remove();
+    });
+
+    likesContainer.appendChild(likesSymbol);
+    likesContainer.appendChild(likesCount);
+    dislikesContainer.appendChild(dislikesSymbol);
+    dislikesContainer.appendChild(dislikesCount);
+
+    likesDislikesContainer.appendChild(likesContainer);
+    likesDislikesContainer.appendChild(dislikesContainer);
+    rightContainer.appendChild(deleteSymbol);
+
+    leftContainer.appendChild(heading);
+    leftContainer.appendChild(content);
+    leftContainer.appendChild(likesDislikesContainer);
+
+    card.appendChild(leftContainer);
+    card.appendChild(rightContainer);
+
+    cardsWrapper.appendChild(card);
+  });
+};
+
+showPosts();
+
+const addLikes = async (element, likesCount, postID) => {
+  const response = await fetch(`${apiUrl}posts/${postID}/likes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(response);
+  if (response.status === 200) {
+    likesCount.innerText = parseInt(element.like_count) + 1;
+  }
+};
+
+const deleteLikes = async (element, likesCount, postID) => {
+  const response = await fetch(`${apiUrl}posts/${postID}/likes`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(response);
+  if (response.status === 204) {
+    likesCount.innerText = parseInt(element.like_count) - 1;
+  }
+};
+
+const addDislikes = async (element, dislikesCount, postID) => {
+  const response = await fetch(`${apiUrl}posts/${postID}/dislikes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(response);
+  if (response.status === 200) {
+    dislikesCount.innerText = parseInt(element.dislike_count) + 1;
+  }
+};
+
+const deleteDislikes = async (element, dislikesCount, postID) => {
+  const response = await fetch(`${apiUrl}posts/${postID}/dislikes`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(response);
+  if (response.status === 204) {
+    dislikesCount.innerText = parseInt(element.dislike_count) - 1;
+  }
+};
+
+const deletePosts = async (element, postID) => {
+  await fetch(`${apiUrl}posts/${postID}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+function debounce(func, timeout = 300) {
+  let timer;
+  return (...args) => {
+    if (!timer) {
+      func.apply(this, args);
     }
-
-    thumbnail.classList.add("book-thumbnail");
-
-    title.innerText = book.volumeInfo.title;
-    title.classList.add("book-title");
-
-    description.innerText = book.volumeInfo.description || "No description";
-    description.classList.add("book-description");
-
-    li.appendChild(cardBody);
-    li.appendChild(cardAddButton);
-    cardBody.appendChild(thumbnail);
-    cardRightContents.appendChild(title);
-    cardRightContents.appendChild(description);
-    cardBody.appendChild(cardRightContents);
-    ul.appendChild(li);
-  });
-  results.appendChild(ul);
-};
-
-// display initial books
-showBooks();
-
-search_input.addEventListener("input", (e) => {
-  search_term = e.target.value;
-  // re-display books again based on the new search_term
-  showBooks();
-});
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+    }, timeout);
+  };
+}

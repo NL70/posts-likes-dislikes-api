@@ -2,38 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
+    <title>Create</title>
     <link rel="icon" type="image/ico" href="images/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
     <main>
       <div class="center-container">
-        <form id="login-form" method="post">
+        <form id="create-form" method="post">
           <div class="login-container">
-            <h2 class="heading">Login</h2>
+            <h2 class="heading">Create</h2>
             <div>
-              <label for="username" class="content">Username:</label>
               <input
-                id="username"
+                class="inputs"
+                id="title"
                 type="text"
-                placeholder="Enter Username"
-                name="username"
+                placeholder="Enter Title"
+                name="title"
                 required
               />
             </div>
 
             <br />
-            <br />
-            <div>
-              <label for="password" class="content">Password:</label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Enter Password"
-                name="password"
+
+            <div id="content-wrapper">
+              <textarea
+                id="content"
+                class="inputs"
+                placeholder="Enter Content"
                 required
-              />
+              ></textarea>
             </div>
 
             <br />

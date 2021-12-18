@@ -1,10 +1,9 @@
-const fetch = require("node-fetch");
 const express = require("express");
+const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
-const path = require("path");
 const { pool } = require("./config");
 
 require("dotenv").config();
@@ -33,27 +32,32 @@ if (process.env.NODE_ENV !== "production") {
   app.use(connectLivereload());
 }
 
-const authTokens = {};
-
-app.use((req, res, next) => {
-  // Get auth token from the cookies
-  const authToken = req.cookies["AuthToken"];
-  // Inject the user to the request
-  req.user = authTokens[authToken];
-  next();
-});
-
-const searchBooks = async (request, response) => {
-  const searchTerm = request.query.q;
-  const booksResponse = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=${process.env.GOOGLE_BOOKS_API_KEY}`
-  );
-  const booksResponseJson = await booksResponse.json();
-  response.status(200).json(booksResponseJson);
-};
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: "secret",
+  })
+);
 
 // Static files
-app.use(express.static("public"));
+app.use(express.static("public", { index: false }));
+
+function redirectOnLogin(req, res, next) {
+  console.log(req.session.user);
+  if (req.session.user) {
+    console.log("redirect index");
+    res.redirect("/index.html");
+  } else {
+    console.log("redirect login");
+    res.redirect("/login.html");
+  }
+  next();
+}
+
+app.get("/", redirectOnLogin);
+
+app.get("/login", redirectOnLogin);
 
 const postsRouter = require("./api/posts");
 app.use("/posts", postsRouter);
@@ -61,31 +65,20 @@ app.use("/posts", postsRouter);
 const usersRouter = require("./api/users");
 app.use("/users", usersRouter);
 
-const likesRouter = require("./api/likes");
-app.use("/likes", likesRouter);
-
-const dislikesRouter = require("./api/dislikes");
-app.use("/dislikes", dislikesRouter);
-
-const publicPath = path.join(__dirname, "public");
-
 const getHashedPassword = (password) => {
   const sha256 = crypto.createHash("sha256");
   const hash = sha256.update(password).digest("base64");
   return hash;
 };
 
-const generateAuthToken = () => {
-  return crypto.randomBytes(30).toString("hex");
-};
-
 app.post("/login", (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
+  console.log(req.body);
 
-  // Check if user with the same email is also registered
+  // Check if user with the same username is also registered
   pool.query(
-    "SELECT * FROM users WHERE email = $1",
-    [email],
+    "SELECT * FROM users WHERE username = $1",
+    [username],
     (error, results) => {
       if (error) {
         throw error;
@@ -95,17 +88,15 @@ app.post("/login", (req, res, next) => {
 
       if (user) {
         if (user.password === hashedPassword) {
-          const authToken = generateAuthToken();
-          // Store authentication token
-          authTokens[authToken] = user;
-          // Setting the auth token in cookies
-          res.cookie("AuthToken", authToken);
-          res.redirect("mybooks");
+          req.session.regenerate(() => {
+            req.session.user = user;
+            res.status(201).send({ data: user });
+          });
           return;
         } else {
           res.status(400).json({
             status: "error",
-            message: "The email or password is invalid.",
+            message: "The username or password is invalid.",
           });
           return;
         }
@@ -113,19 +104,17 @@ app.post("/login", (req, res, next) => {
 
       // Store user into the database
       pool.query(
-        "INSERT INTO users (email, password) VALUES ($1, $2)",
-        [email, hashedPassword],
+        "INSERT INTO users (username, password) VALUES ($1, $2)",
+        [username, hashedPassword],
         (error) => {
           if (error) {
             throw error;
           }
           const user = results.rows[0];
-          const authToken = generateAuthToken();
-          // Store authentication token
-          authTokens[authToken] = user;
-          // Setting the auth token in cookies
-          res.cookie("AuthToken", authToken);
-          res.redirect("mybooks");
+          req.session.regenerate(() => {
+            req.session.user = user;
+            res.status(201).send({ data: user });
+          });
           return;
         }
       );
@@ -133,17 +122,7 @@ app.post("/login", (req, res, next) => {
   );
 });
 
-app.use("/mybooks", (req, res) => {
-  if (req.user) {
-    res.sendFile(publicPath + "/mybooks.html");
-  } else {
-    res.sendFile(publicPath + "/login.html");
-  }
-});
-
-app.route("/google_books").get(searchBooks);
-
-// Start server
-app.listen(process.env.PORT || 3002, () => {
-  console.log(`Server listening at port ${process.env.PORT || 3002}`);
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log(`Server listening at port ${port}`);
 });
