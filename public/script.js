@@ -3,7 +3,6 @@
 
 // let search_term = "";
 
-console.log("SCRIPT RUNNING");
 let posts = [];
 const form = document.getElementById("login-form");
 const username = document.getElementById("username");
@@ -26,7 +25,6 @@ const login = async (user) => {
 
   if (response.status === 201) {
     const responseJson = await response.json();
-    console.log(responseJson.data.username);
     localStorage.setItem("username", responseJson.data.username);
     window.location.href = "/";
   }
@@ -37,9 +35,6 @@ if (usernameDisplay) {
 }
 
 const handleSubmit = async (event) => {
-  //   console.log("submit form");
-  //   console.log(username.value);
-  //   console.log(password.value);
   event.preventDefault();
   await login({
     username: username.value,
@@ -48,9 +43,6 @@ const handleSubmit = async (event) => {
 };
 
 const handleCreatePost = async (event) => {
-  //   console.log("submit form");
-  //   console.log(username.value);
-  //   console.log(password.value);
   event.preventDefault();
   await createPost({
     title: title.value,
@@ -80,9 +72,7 @@ if (createForm) {
 const fetchPosts = async () => {
   const response = await fetch(`${apiUrl}posts`);
   const responseJson = await response.json();
-  console.log("e");
   posts = responseJson.data;
-  // console.log(responseJson.data);
 };
 
 const showPosts = async () => {
@@ -93,7 +83,6 @@ const showPosts = async () => {
     return;
   }
   posts.forEach((element, index) => {
-    console.log(element);
     const card = document.createElement("div");
     card.classList.add("card");
 
@@ -206,7 +195,6 @@ const addLikes = async (element, likesCount, postID) => {
       "Content-Type": "application/json",
     },
   });
-  console.log(response);
   if (response.status === 200) {
     likesCount.innerText = parseInt(element.like_count) + 1;
   }
@@ -219,7 +207,6 @@ const deleteLikes = async (element, likesCount, postID) => {
       "Content-Type": "application/json",
     },
   });
-  console.log(response);
   if (response.status === 204) {
     likesCount.innerText = parseInt(element.like_count) - 1;
   }
@@ -232,7 +219,6 @@ const addDislikes = async (element, dislikesCount, postID) => {
       "Content-Type": "application/json",
     },
   });
-  console.log(response);
   if (response.status === 200) {
     dislikesCount.innerText = parseInt(element.dislike_count) + 1;
   }
@@ -245,7 +231,6 @@ const deleteDislikes = async (element, dislikesCount, postID) => {
       "Content-Type": "application/json",
     },
   });
-  console.log(response);
   if (response.status === 204) {
     dislikesCount.innerText = parseInt(element.dislike_count) - 1;
   }

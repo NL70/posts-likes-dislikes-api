@@ -4,12 +4,6 @@ const crypto = require("crypto");
 
 const usersRouter = express.Router();
 
-// Add user < Done!
-
-// Add likes < Done!
-// Delete likes < Done!
-// Same for dislikes ^ < Done!
-
 const getUser = (req, res) => {
   const userId = req.params.userId;
   // Handle 404
@@ -55,23 +49,6 @@ const getHashedPassword = (password) => {
   const hash = sha256.update(password).digest("base64");
   return hash;
 };
-
-// const deletePosts = (req, res) => {
-//   const postsId = req.params.postId;
-//   pool.query("DELETE FROM posts WHERE id = $1", [postsId], (error, results) => {
-//     if (results.rowCount === 0) {
-//       res
-//         .status(404)
-//         .json({ status: "error", message: "Post does not exist." });
-//       return;
-//     }
-//     if (error) {
-//       res.status(500).json({ status: "error", message: error.message });
-//       return;
-//     }
-//     res.status(204);
-//   });
-// };
 
 usersRouter.get("/:userId", getUser);
 usersRouter.post("/", addUser);
