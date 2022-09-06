@@ -7,10 +7,6 @@ Features:
 - Delete a post
 - Login
 
-Uses:
-- Javascript 
-- HTML
-- CSS
-- SQL
+Uses a PostgreSQL database and ExpressJS.
 
 Deployed here: https://posts-likes-dislikes-api.herokuapp.com/index.html
